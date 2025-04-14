@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wisdom Uzo-Hez - Personal Website</title>
+  <link rel="stylesheet" href="JS_CSS_downloaded_libraries/bootstrap.min.css">
+  <style>
+    body {
+        position: relative;
+      padding-top: 60px;
+    }
+    section {
+      padding: 60px 0;
+    }
+    .navbar {
+      background-color: #343a40;
+    }
+    .navbar a {
+      color: white;
+    }
+  </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-offset="70" tabindex="0">
+
+  <!-- Navigation Bar -->
+  <nav id="navbar" class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">My Website</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#gallery">Gallery</a></li>
+          <li class="nav-item"><a class="nav-link" href="#mywebapp">MyWebApp</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- Content Sections -->
+  <div class="container">
+    <section id="about">
+      <h1>About Me</h1>
+      <p>Hello! My name is Wisdom Uzo-Hez, and this is my personal website.
+      </p> I am currently studying Geography at the University of New Mexico.</p>
+    </section>
+    <section id="gallery">
+        <h2>Gallery </h2>
+        <div id="carouselGallery" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+              <button type="button" data-bs-target="#carouselGallery" data-bs-slide-to="0" class="active"></button>
+              <button type="button" data-bs-target="#carouselGallery" data-bs-slide-to="1"></button>
+              <button type="button" data-bs-target="#carouselGallery" data-bs-slide-to="2"></button>
+            </div>
+            <div class="carousel-inner">
+              <div class="carousel-item active">
+                <img src="images/Profile Picture.jpg" class="d-block w-100" alt="Gallery image 1" />
+                <div class="carousel-caption">
+                  <h5>Profile Picture</h5>
+                  
+                </div>
+              </div>
+              <div class="carousel-item">
+                <img src="images/Hobbies.jpg" class="d-block w-100" alt="Gallery image 2" />
+                <div class="carousel-caption">
+                  <h5>Hobbies</h5>
+                  <p>I love to learn and play new musical instruments. I also love video games and playing soccer.</p>
+                </div>
+              </div>
+              <div class="carousel-item">
+                <img src="images/My work interests.JPG" class="d-block w-100" alt="Gallery image 3" />
+                <div class="carousel-caption">
+                  <h5>Status</h5>
+                  <p>I work with Geographic Information System applications using spatial analysis to solve  
+                  some basic geographic problems we have in the world of today like accessibility or flood risk assessment.</p>
+                </div>
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselGallery" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselGallery" data-bs-slide="next">
+              <span class="carousel-control-next-icon"></span>
+            </button>
+          </div>
+        </section>
+  
+    <section id="mywebapp">
+      <h1>MyWebApp</h1>
+      <p>This page will eventually link to my final project web application.</p>
+      <p>Visit it here: <a href="MyWebApp/index.html">My Web App</a></p>
+    </section>
+
+    <section id="contact">
+        <h2>Contact</h2>
+        <p>Feel free to reach out!</p>
+      <p>Email: sknick00@unm.edu</p>
+      <p>Phone no: 5053107982</p>
+    </section>
+  </div>
+<!-- FOOTER -->
+<footer>
+    <p>&copy; 2025 Wisdom Uzo-Hez. All rights reserved.</p>
+  </footer>
+  <!-- Bootstrap JS -->
+  <script src="JS_CSS_downloaded_libraries/bootstrap.bundle.min.js"></script>
+  <!-- Your custom CSS -->
+<link rel="stylesheet" href="myCSS_styleFiles/myStyle.css">
+</body>
+</html>

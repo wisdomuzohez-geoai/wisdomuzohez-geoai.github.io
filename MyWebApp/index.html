@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Final Project Web App</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="../JS_CSS_downloaded_libraries/bootstrap.min.css" />
+  <!-- Your dark theme style -->
+  <link rel="stylesheet" href="../myCSS_styleFiles/myStyle.css" />
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="../index.html">← Back to Main Site</a>
+      <button class="btn btn-custom ms-auto" data-bs-toggle="modal" data-bs-target="#aboutModal">
+        About This App
+      </button>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <h1 class="text-center">Welcome to My Final Project Web App</h1>
+    
+
+    <!-- Placeholder for the actual app -->
+    <div class="my-5 p-5 text-center" style="border: 2px dashed #444; border-radius: 15px;">
+      <p>This is where my interactive map or web app content will go.</p>
+    </div>
+  </div>
+
+  <!-- MODAL: About Info -->
+  <div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content bg-dark text-light shadow">
+        <div class="modal-header">
+          
+          
+        </div>
+        <div class="modal-body">
+          <!-- ABOUT PROJECT -->
+          <h5>About the Project</h5>
+          <p>
+            This interactive web app is designed to develop an interactive application to visualize 
+            structural damage caused by wildfires in LA County in order to support disaster response and planning. 
+            It is built for users such as planners, emergency responders, or researchers who want to learn more about
+            the impact of wildfires in vunerable areas.
+          </p>
+
+          <!-- ABOUT TEAM -->
+          <h5>About the Team</h5>
+          <ul>
+            <li>
+              Developer: <a href="https://github.com/wisdomuzohez-geoai/wisdomuzohez-geoai.github.io" target="_blank">Wisdom Uzo-Hez</a> 
+              (<a href="mailto:sknick00@unm.edu">sknick00@unm.edu</a>)
+            </li>
+            <li>
+                Developer: <a href="https://github.com/matthewsmith-geoai/matthewsmith-geoai.github.io" target="_blank">Matthew Smith</a> 
+              (<a href="mailto:msmithy145@gmail.com">msmithy145@gmail.com</a>)
+            </li>
+            <li>
+                Developer: <a href="https://github.com/amymares-geoai/amymares-geoai.github.io" target="_blank">Amy Mares</a> 
+              (<a href="amydugger2@gmail.com">amydugger2@gmail.com</a>)
+            </li>
+            <li>
+              Project Advisor: 
+              <a href="http://www.lipingyang.org" target="_blank">Dr. Liping Yang</a> 
+              (Instructor, GEOG 485L/585L Interactive Web Mapping)
+            </li>
+          </ul>
+
+          <!-- ACKNOWLEDGEMENTS -->
+          <h5>Acknowledgements</h5>
+          <p>
+            Data and components used in this app are sourced from:
+            <br />
+            - <a href="https://leafletjs.com" target="_blank">Leaflet JS</a><br />
+            - <a href="https://getbootstrap.com" target="_blank">Bootstrap Framework</a><br />
+            - <a href="https://recovery.lacounty.gov/palisades-fire/
+            " target="_blank">Current Map showing the palisades fire</a> 
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="mt-5 text-center">
+    <p>&copy; 2025 Wisdom Uzo-Hez. All rights reserved.</p>
+  </footer>
+
+  <!-- Bootstrap Bundle JS -->
+  <script src="../JS_CSS_downloaded_libraries/bootstrap.bundle.min.js"></script>
+</body>
+</html>
