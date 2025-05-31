@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <!-- Import jQuery Library -->
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+    integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+    crossorigin="" /><!-- Import Leaflet Styles -->
+
+  <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+    integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+    crossorigin=""></script><!-- Import Leaflet Library -->
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.legend/dist/leaflet.legend.css" />
+  <script src="https://unpkg.com/leaflet.legend/dist/leaflet.legend.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+
+  <script src="leaflet-timeline-slider.js"></script> <!-- Import Time Slider Plugin downloaded from repository -->
+  <!-- Load GeoJSON data files and any custom scripts -->
+  <script src="Fires.js"></script> <!-- Fire incident GeoJSON -->
+  <script src="LA_Boundary.js"></script> <!-- LA County boundary GeoJSON -->
+
+  <title>LA County Fires Map Alpha Version</title>
+
+  <style>
+    .legend {
+      background: white;
+      padding: 5px;
+      line-height: 2em;
+      color: #333;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+/* added CSS to bring modal button to the right */
+    #aboutBtn {
+      position: absolute;
+      top: 10px;
+      right: 5px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <h3>Visualizing Los Angeles County Wildfire Damage</h3>
+  <div class="container">
+    <!-- Trigger the modal with a button -->
+    <button id="aboutBtn" type="button" class="btn btn-info btn-lg" data-toggle="modal"
+      data-target="#myModal">About</button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+      <div class="modal-dialog modal-dialog-right">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-dialog modal-sm">
+            <h4>Project Developers and Advisors</h4>
+           <a href="https://github.com/AmyMares">Amy Mares</a> (adugger1@unm.edu)<br> 
+            <a href="https://github.com/wisdomuzohez-geoai">Wisdom Uzo-Hez</a> (sknick00@unm.edu)<br> 
+            <a href="https://github.com/MatthewSmith">Matthew Smith</a> (msmith145@unm.edu)<br>
+            Advisor: <a href="https://www.lipingyang.org">Dr. Liping Yang</a><br>
+           <h4>Resources</h4>
+          <a href="https://github.com/ptma/Leaflet.Legend">Leaflet Legend</a><br>
+            <a href="https://github.com/svitkin/leaflet-timeline-slider?tab=readme-ov-file">Timeline Slider</a><br>
+            <a href="https://data.ca.gov/dataset/cal-fire-damage-inspection-dins-data">Cal Fire DINS data</a><br>
+            <a href="https://recovery.lacounty.gov/palisades-fire/">Palisades Fire Damage Maps</a><br>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- The map will be rendered inside this div -->
+  <div id="mapvp" style="height: 580px; width:1556px;"></div>
+
+
+  <script>
+    var aboutButton = L.control({ position: 'topright' });
+    // Initialize the Leaflet map and set the view centered over LA County
+    var map = L.map('mapvp').setView([34.10, -118.25], 9);
+
+
+    let currentCircleMarkers = []; // Track visible markers     // Dr. Yang added
+
+
+
+    // Add a satellite tile layer from Esri as the base map
+    L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
+    }).addTo(map);
+
+    // Add LA County boundary GeoJSON layer to the map with styling
+    L.geoJson(bndy, {
+      style: {
+        color: "blue",
+        weight: 3,
+        opacity: 0.7,
+        fillOpacity: 0
+      }
+    }).addTo(map);
+
+    // Add Fire perimeter polygons
+
+
+
+    // Function to bind popups to each fire feature
+    function addPopups(feature, layer) {
+      layer.bindPopup(
+        "<b>Damage Class:</b> " + feature.properties.DAMAGE + "<br>" +
+        "<b>Structure Type:</b> " + feature.properties.STRUCTURET + "<br>" +
+        "<b>Fire Incident Name:</b> " + feature.properties.INCIDENTNA + "<br>" +
+        "<b>Date:</b> " + new Date(feature.properties.INCIDENTST).toLocaleDateString()
+      );
+    }
+
+    // Function to style and convert each point feature into a circle marker
+    function pointToCircle(feature, latlng) {
+      var fillColor_Var = "gray";
+
+      // Extract and clean up the damage percentage string
+      var destroyStr = feature.properties["DAMAGE"] || "";
+      destroyStr = destroyStr.replace(/\\u003e/g, ">").replace(/\\u003c/g, "<");
+
+      // Use regex to extract the percentage value from the string
+      var match = destroyStr.match(/\d+/);
+      var destroy = match ? parseInt(match[0]) : 0;
+
+      // Set circle color based on severity
+      switch (true) {
+        case (destroy > 49):
+          fillColor_Var = "red"; // Destroyed
+          break;
+        case (destroy >= 10 && destroy <= 49):
+          fillColor_Var = "orange"; // Major damage
+          break;
+        case (destroy < 10):
+          fillColor_Var = "green"; // Minor damage
+          break;
+        default:
+          fillColor_Var = "gray"; // Unknown
+      }
+
+      // Return a circle marker with styling
+      return L.circleMarker(latlng, {
+        radius: 5,               // Marker size (smaller = less prominent)
+        fillColor: fillColor_Var,
+        color: "black",          // Circle border color
+        weight: 1,               // Border thickness
+        opacity: 1,
+        // fillOpacity: 0.6// Dr. Yang commnetd out
+        fillOpacity: 0.6 // fixed default; actual slider value is set dynamically above
+      });
+
+    }
+
+    // Extract unique fire years based on the INCIDENTST property
+    var FireYears = [...new Set(fires.features.map(feature =>
+      new Date(feature.properties.INCIDENTST).getFullYear()
+    ))].sort();
+
+
+//Dr. Yang revised function -- start
+function getDataAddMarkers({ label, map }) {
+  const selectedYear = parseInt(label);
+
+  // Remove only circle markers (don't touch basemap or boundaries)
+  const toRemove = [];
+  map.eachLayer(function (layer) {
+    if (layer instanceof L.CircleMarker) {
+      toRemove.push(layer);
+    }
+  });
+  toRemove.forEach(l => map.removeLayer(l));
+  currentCircleMarkers = []; //dr.yang added 
+
+  const visiblePoints = [];
+
+  // Add filtered markers
+  L.geoJson(fires, {
+    filter: function (feature) {
+      const year = new Date(feature.properties.INCIDENTST).getFullYear();
+      const damage = feature.properties.DAMAGE || "";
+      const show = year === selectedYear && damage.toLowerCase() !== "no damage";
+      if (show && feature.geometry && feature.geometry.type === "Point") {
+        visiblePoints.push([
+          feature.geometry.coordinates[1],
+          feature.geometry.coordinates[0]
+        ]);
+      }
+      return show;
+    },
+    onEachFeature: addPopups,
+    // pointToLayer: pointToCircle //Dr. Yang commnted out
+    //dr. yang added start 
+    pointToLayer: function (feature, latlng) {
+      const marker = pointToCircle(feature, latlng);
+
+      // Get current slider value and apply it
+      const opacity = parseFloat(document.getElementById("opacitySlider").value || "0.6");
+      marker.setStyle({ fillOpacity: opacity });
+
+      currentCircleMarkers.push(marker);
+      return marker;
+    }
+    //dr. yang added end
+  }).addTo(map);
+
+  // Zoom to visible points
+  if (visiblePoints.length > 0) {
+    const bounds = L.latLngBounds(visiblePoints);
+    map.fitBounds(bounds, { padding: [20, 20] });
+  }
+}
+
+///Dr. Yang revised function -- End
+
+
+
+// // Amy's old code -- start
+
+
+
+//     // Function to update map with markers for selected year
+//     function getDataAddMarkers({ label, map }) {
+//       const selectedYear = parseInt(label);
+
+//       // Remove previous markers
+//       map.eachLayer(function (layer) {
+//         if (layer instanceof L.CircleMarker) {
+//           map.removeLayer(layer);
+//         }
+//       });
+
+// // Add filtered markers for selected year
+// L.geoJson(fires, {
+//         filter: function (feature) {
+//           const year = new Date(feature.properties.INCIDENTST).getFullYear();
+//           const damage = feature.properties.DAMAGE || "";
+//           // Remove structures listed as "No Damage" for map clarity
+//           return year === selectedYear && damage.toLowerCase() !== "no damage";
+//         },
+//         onEachFeature: addPopups,
+//         pointToLayer: pointToCircle
+//       }).addTo(map);
+//     }
+
+
+//       //Amy's old code -- end 
+
+
+
+      
+
+    // Add timeline slider control
+    L.control.timelineSlider({
+      timelineItems: FireYears.map(year => year.toString()),
+      changeMap: getDataAddMarkers,
+      position: "bottomleft"
+    }).addTo(map);
+
+    // Initialize with first year selected
+    getDataAddMarkers({ label: FireYears[0].toString(), map });
+
+    var legend = L.control({ position: 'bottomright' });
+
+    legend.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'info legend');
+      var grades = ['Affected, <10% Damage', 'Minor, 10-49% Damage', 'Destroyed, >49% Damage'];
+      var colors = ['green', 'orange', 'red'];
+      div.innerHTML = '<div style="font-weight: bold; margin-bottom: 10px;">Structure Damage Legend</div>';
+
+      for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+          '<i style="background:' + colors[i] + '; width: 18px; height: 18px; display: inline-block; margin-right: 5px;"></i> ' +
+          grades[i] + '<br>';
+
+      }
+
+      return div;
+    };
+
+    legend.addTo(map);
+
+
+
+
+
+      //Dr. Yang added code --- START
+
+      document.getElementById("opacitySlider").addEventListener("input", function () {
+        const opacity = parseFloat(this.value);
+        currentCircleMarkers.forEach(marker => {
+          marker.setStyle({ fillOpacity: opacity });
+        });
+      });
+
+      //Dr. Yang added code --- END 
+
+
+
+
+    </script>
+  
+  
+  <!-- Dr. Yang added - Start -->
+  <div id="opacityPanel" style="position:absolute; top:70px; right:10px; background:white; padding:10px; z-index:1000; border-radius:6px; border:1px solid #ccc;">
+    <label for="opacitySlider"><strong>Point Opacity:</strong></label><br>
+    <input type="range" id="opacitySlider" min="0" max="1" step="0.1" value="0.6">
+  </div>
+
+  <!-- Dr. Yang added - End -->
+</body>
+
+</html>
